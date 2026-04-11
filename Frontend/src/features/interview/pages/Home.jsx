@@ -2,15 +2,29 @@ import React, { useState, useRef } from 'react'
 import "../style/home.scss"
 import { useInterview } from '../hooks/useInterview.js'
 import { useNavigate } from 'react-router'
+import { useAuth } from '../../auth/hooks/useAuth.js'
 
 const Home = () => {
 
     const { loading, generateReport,reports } = useInterview()
+    const { handleLogout } = useAuth()
     const [ jobDescription, setJobDescription ] = useState("")
     const [ selfDescription, setSelfDescription ] = useState("")
+    const [ resumeFileName, setResumeFileName ] = useState("")
     const resumeInputRef = useRef()
 
     const navigate = useNavigate()
+
+    const handleFileChange = (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setResumeFileName(e.target.files[0].name)
+        }
+    }
+
+    const onLogout = async () => {
+        await handleLogout()
+        navigate('/login')
+    }
 
     const handleGenerateReport = async () => {
         const resumeFile = resumeInputRef.current.files[ 0 ]
@@ -21,13 +35,34 @@ const Home = () => {
     if (loading) {
         return (
             <main className='loading-screen'>
-                <h1>Loading your interview plan...</h1>
+                <div className='ai-loader'>
+                    <div className='ai-loader-inner'></div>
+                </div>
+                <h2 className='loading-text'>
+                    Generating Interview Plan<span className='dots'><span>.</span><span>.</span><span>.</span></span>
+                </h2>
             </main>
         )
     }
 
     return (
         <div className='home-page'>
+            <div className='bg-orbs'>
+                <div className='orb orb-1'></div>
+                <div className='orb orb-2'></div>
+            </div>
+
+            {/* Top Navigation */}
+            <nav className='top-navbar'>
+                <div className='navbar-brand'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+                    <span>Interview<span className='highlight'>AI</span></span>
+                </div>
+                <button onClick={onLogout} className='logout-btn'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Logout
+                </button>
+            </nav>
 
             {/* Page Header */}
             <header className='page-header'>
@@ -77,11 +112,21 @@ const Home = () => {
                             </label>
                             <label className='dropzone' htmlFor='resume'>
                                 <span className='dropzone__icon'>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16" /><line x1="12" y1="12" x2="12" y2="21" /><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" /></svg>
+                                    {resumeFileName ? (
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                    ) : (
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16" /><line x1="12" y1="12" x2="12" y2="21" /><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" /></svg>
+                                    )}
                                 </span>
-                                <p className='dropzone__title'>Click to upload or drag &amp; drop</p>
-                                <p className='dropzone__subtitle'>PDF or DOCX (Max 5MB)</p>
-                                <input ref={resumeInputRef} hidden type='file' id='resume' name='resume' accept='.pdf,.docx' />
+                                <p className='dropzone__title'>
+                                    {resumeFileName ? (
+                                        <span style={{ color: '#4ade80' }}>{resumeFileName}</span>
+                                    ) : (
+                                        "Click to upload or drag & drop"
+                                    )}
+                                </p>
+                                <p className='dropzone__subtitle'>{resumeFileName ? "File ready for analysis" : "PDF or DOCX (Max 5MB)"}</p>
+                                <input onChange={handleFileChange} ref={resumeInputRef} hidden type='file' id='resume' name='resume' accept='.pdf,.docx' />
                             </label>
                         </div>
 

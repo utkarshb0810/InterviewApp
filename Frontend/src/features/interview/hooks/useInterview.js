@@ -4,6 +4,8 @@ import { InterviewContext } from "../interview.context"
 import { useParams } from "react-router"
 
 
+const wait = (ms) => new Promise(res => setTimeout(res, ms));
+
 export const useInterview = () => {
 
     const context = useContext(InterviewContext)
@@ -19,7 +21,11 @@ export const useInterview = () => {
         setLoading(true)
         let response = null
         try {
-            response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile })
+            const [res] = await Promise.all([
+                generateInterviewReport({ jobDescription, selfDescription, resumeFile }),
+                wait(2000) // Ensure animation shows for at least 2 seconds
+            ]);
+            response = res;
             setReport(response.interviewReport)
         } catch (error) {
             console.log(error)
@@ -27,28 +33,36 @@ export const useInterview = () => {
             setLoading(false)
         }
 
-        return response.interviewReport
+        return response?.interviewReport
     }
 
     const getReportById = async (interviewId) => {
         setLoading(true)
         let response = null
         try {
-            response = await getInterviewReportById(interviewId)
+            const [res] = await Promise.all([
+                getInterviewReportById(interviewId),
+                wait(1500) // Ensure animation shows for at least 1.5 seconds
+            ]);
+            response = res;
             setReport(response.interviewReport)
         } catch (error) {
             console.log(error)
         } finally {
             setLoading(false)
         }
-        return response.interviewReport
+        return response?.interviewReport
     }
 
     const getReports = async () => {
         setLoading(true)
         let response = null
         try {
-            response = await getAllInterviewReports()
+            const [res] = await Promise.all([
+                getAllInterviewReports(),
+                wait(1500) // Ensure animation shows for at least 1.5 seconds
+            ]);
+            response = res;
             setReports(response.interviewReports)
         } catch (error) {
             console.log(error)
@@ -56,7 +70,7 @@ export const useInterview = () => {
             setLoading(false)
         }
 
-        return response.interviewReports
+        return response?.interviewReports
     }
 
     const getResumePdf = async (interviewReportId) => {

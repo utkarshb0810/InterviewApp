@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import '../style/interview.scss'
 import { useInterview } from '../hooks/useInterview.js'
 import { useNavigate, useParams } from 'react-router'
-
+import { useAuth } from '../../auth/hooks/useAuth.js'
 
 
 const NAV_ITEMS = [
@@ -61,6 +61,13 @@ const Interview = () => {
     const [ activeNav, setActiveNav ] = useState('technical')
     const { report, getReportById, loading, getResumePdf } = useInterview()
     const { interviewId } = useParams()
+    const { handleLogout } = useAuth()
+    const navigate = useNavigate()
+
+    const onLogout = async () => {
+        await handleLogout()
+        navigate('/login')
+    }
 
     useEffect(() => {
         if (interviewId) {
@@ -73,7 +80,12 @@ const Interview = () => {
     if (loading || !report) {
         return (
             <main className='loading-screen'>
-                <h1>Loading your interview plan...</h1>
+                <div className='ai-loader'>
+                    <div className='ai-loader-inner'></div>
+                </div>
+                <h2 className='loading-text'>
+                    Loading Interview Plan<span className='dots'><span>.</span><span>.</span><span>.</span></span>
+                </h2>
             </main>
         )
     }
@@ -85,6 +97,17 @@ const Interview = () => {
 
     return (
         <div className='interview-page'>
+            <nav className='top-navbar'>
+                <div className='navbar-brand' onClick={() => navigate('/')}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+                    <span>Interview<span className='highlight'>AI</span></span>
+                </div>
+                <button onClick={onLogout} className='logout-btn'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Logout
+                </button>
+            </nav>
+
             <div className='interview-layout'>
 
                 {/* ── Left Nav ── */}
