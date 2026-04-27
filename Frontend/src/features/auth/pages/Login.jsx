@@ -16,13 +16,25 @@ const Login = () => {
     navigate("/");
   };
 
-  if (loading) {
-    return (
-      <main className="auth-page">
-        <h1>Loading.......</h1>
-      </main>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <main className="auth-page">
+  //       <h1>Loading.......</h1>
+  //     </main>
+  //   );
+  // }
+   if (loading) {
+        return (
+            <main className='loading-screen'>
+                <div className='ai-loader'>
+                    <div className='ai-loader-inner'></div>
+                </div>
+                <h2 className='loading-text'>
+                    Login<span className='dots'><span>.</span><span>.</span><span>.</span></span>
+                </h2>
+            </main>
+        )
+    }
 
   return (
     <main className="auth-page">

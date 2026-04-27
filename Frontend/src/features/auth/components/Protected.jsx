@@ -6,8 +6,20 @@ const Protected = ({children}) => {
     const { loading,user } = useAuth()
 
 
-    if(loading){
-        return (<main><h1>Loading...</h1></main>)
+    // if(loading){
+    //     return (<main><h1>Loading...</h1></main>)
+    // }
+    if (loading) {
+        return (
+            <main className='loading-screen'>
+                <div className='ai-loader'>
+                    <div className='ai-loader-inner'></div>
+                </div>
+                <h2 className='loading-text'>
+                    Loading<span className='dots'><span>.</span><span>.</span><span>.</span></span>
+                </h2>
+            </main>
+        )
     }
 
     if(!user){
